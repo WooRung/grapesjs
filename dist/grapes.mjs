@@ -26875,7 +26875,10 @@ var FrameView = /** @class */ (function (_super) {
             if (frameContent) {
                 var doc = _this.getDoc();
                 doc.open();
-                doc.write(frameContent);
+                // doc.write(frameContent);
+                if (doc.documentElement) {
+                    doc.documentElement.innerHTML = frameContent;
+                }
                 doc.close();
             }
             evOpts.window = _this.getWindow();
@@ -61079,15 +61082,14 @@ var EditorView_EditorView = /** @class */ (function (_super) {
     view_EditorView_extends(EditorView, _super);
     function EditorView(model) {
         var _this = _super.call(this, { model: model }) || this;
-        //const { model } = this;
-        var _a = model.attributes, Panels = _a.Panels, UndoManager = _a.UndoManager;
+        var Panels = model.Panels, UndoManager = model.UndoManager;
         model.view = _this;
         model.once('change:ready', function () {
             Panels.active();
             Panels.disableButtons();
             UndoManager.clear();
             setTimeout(function () {
-                model.trigger('load', model.get('Editor'));
+                model.trigger('load', model.Editor);
                 model.clearDirtyCount();
             });
         });
@@ -61096,32 +61098,25 @@ var EditorView_EditorView = /** @class */ (function (_super) {
     EditorView.prototype.render = function () {
         var _this = this;
         var _a = this, $el = _a.$el, model = _a.model;
-        var _b = model.attributes, Panels = _b.Panels, Canvas = _b.Canvas;
-        var config = model.config, modules = model.modules;
+        var Panels = model.Panels, Canvas = model.Canvas, config = model.config, modules = model.modules;
         var pfx = config.stylePrefix;
         var classNames = ["".concat(pfx, "editor")];
         !config.customUI && classNames.push("".concat(pfx, "one-bg ").concat(pfx, "two-color"));
-        // @ts-ignore
         var contEl = (0,cash_dom["default"])(config.el || "body ".concat(config.container));
         config.cssIcons && (0,mixins.appendStyles)(config.cssIcons, { unique: true, prepand: true });
         $el.empty();
-        // @ts-ignore
-        if (config.width)
-            contEl.css('width', config.width);
-        // @ts-ignore
-        if (config.height)
-            contEl.css('height', config.height);
+        config.width && contEl.css('width', config.width);
+        config.height && contEl.css('height', config.height);
         $el.append(Canvas.render());
         $el.append(Panels.render());
         // Load shallow editor
-        var shallow = model.get('shallow');
-        var shallowCanvasEl = shallow.get('Canvas').render();
+        var shallow = model.shallow;
+        var shallowCanvasEl = shallow.Canvas.render();
         shallowCanvasEl.style.display = 'none';
         $el.append(shallowCanvasEl);
         $el.attr('class', classNames.join(' '));
-        // @ts-ignore
         contEl.addClass("".concat(pfx, "editor-cont")).empty().append($el);
-        modules.forEach(function (md) { return md.postRender && md.postRender(_this); });
+        modules.forEach(function (md) { var _a; return (_a = md.postRender) === null || _a === void 0 ? void 0 : _a.call(md, _this); });
         return this;
     };
     return EditorView;
@@ -62160,7 +62155,7 @@ var grapesjs = {
     plugins: plugins,
     usePlugin: usePlugin,
     // @ts-ignore Will be replaced on build
-    version: '0.21.10',
+    version: '0.21.11',
     /**
      * Initialize the editor with passed options
      * @param {Object} config Configuration object

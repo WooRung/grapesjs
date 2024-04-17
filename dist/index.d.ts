@@ -8050,9 +8050,7 @@ Sectors> {
 	 *  options: [{ id: 'value1', label: 'Some label' }, ...],
 	 * })
 	 */
-	addBuiltIn(prop: string, definition: Omit<PropertyProps, "property"> & {
-		proeperty?: "string";
-	}): any;
+	addBuiltIn(prop: string, definition: PropertyProps): any;
 	/**
 	 * Get what to style inside Style Manager. If you select the component
 	 * without classes the entity is the Component itself and all changes will
